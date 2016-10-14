@@ -314,7 +314,7 @@
     
     UICollectionViewFlowLayout *flowLayout = UICollectionViewFlowLayout.new;
     flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-
+    
     flowLayout.minimumInteritemSpacing =20;
     flowLayout.sectionInset = UIEdgeInsetsMake(0, 60, 0, 0);
     self.collectionView = [UICollectionView.alloc initWithFrame:CGRectZero
@@ -638,11 +638,14 @@
                                                  }];
         };
         NSString *videoURLS = NSString.new;
-        for (MHImageURL *dataURL in images) {
-            if ([dataURL.image isKindOfClass:UIImage.class] && !dataURL.image.images) {
-                [shareconntroller addImage:dataURL.image];
+        for (id item in images) {
+            if ([item isKindOfClass:UIImage.class]) {
+                UIImage *image = (UIImage *)item;
+                if (!image.images) {
+                    [shareconntroller addImage:image];
+                }
             }else{
-                videoURLS = [videoURLS stringByAppendingString:[NSString stringWithFormat: @"%@ \n",dataURL.URL]];
+                videoURLS = [videoURLS stringByAppendingString:[NSString stringWithFormat: @"%@ \n",item]];
             }
         }
         [shareconntroller setInitialText:videoURLS];
@@ -666,27 +669,34 @@
         picker.messageComposeDelegate = self;
         NSString *videoURLS = NSString.new;
         
-        for (MHImageURL *dataURL in images) {
-            if ([dataURL.image isKindOfClass:UIImage.class]) {
-                UIImage *image = dataURL.image;
+        for (id item in images) {
+            if ([item isKindOfClass:UIImage.class]) {
+                UIImage *image = (UIImage *)item;
                 if (image.images) {
-                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[SDImageCache.sharedImageCache defaultCachePathForKey:dataURL.URL]]
+                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[SDImageCache.sharedImageCache defaultCachePathForKey:image]]
                                typeIdentifier:(__bridge NSString *)kUTTypeGIF
                                      filename:@"animated.gif"];
                 }else{
-                    [picker addAttachmentData:UIImageJPEGRepresentation(dataURL.image, 1.0)
+                    [picker addAttachmentData:UIImageJPEGRepresentation(image, 1.0)
                                typeIdentifier:@"public.image"
                                      filename:@"image.JPG"];
                 }
-            }else{
-                videoURLS = [videoURLS stringByAppendingString:[NSString stringWithFormat: @"%@ \n",dataURL.URL]];
+            }else if([item isKindOfClass:MHImageURL.class]){
+                MHImageURL *video = (MHImageURL *)item;
+                NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:video.URL]];
+                
+                [picker addAttachmentData:data
+                           typeIdentifier:kUTTypeMPEG4
+                                 filename:@"video.mp4"];
             }
         }
         picker.body = videoURLS;
+        if (picker) {
+            [self presentViewController:picker
+                               animated:YES
+                             completion:nil];
+        }
         
-        [self presentViewController:picker
-                           animated:YES
-                         completion:nil];
         
     } saveDataToCameraRoll:NO];
 }
@@ -697,21 +707,26 @@
         picker.mailComposeDelegate = self;
         NSString *videoURLS = [NSString new];
         
-        for (MHImageURL *dataURL in images) {
-            if ([dataURL.image isKindOfClass:UIImage.class]) {
-                UIImage *image = dataURL.image;
+        for (id item in images) {
+            if ([item isKindOfClass:UIImage.class]) {
+                UIImage *image = (UIImage *)item;
+                
                 if (image.images) {
-                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:dataURL.URL]]
+                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:image]]
                                      mimeType:@"image/gif"
                                      fileName:@"pic.gif"];
                 }else{
-                    [picker addAttachmentData:UIImageJPEGRepresentation(dataURL.image, 1.0)
+                    [picker addAttachmentData:UIImageJPEGRepresentation(image, 1.0)
                                      mimeType:@"image/jpeg"
                                      fileName:@"image"];
                 }
                 
-            }else{
-                videoURLS = [videoURLS stringByAppendingString:[NSString stringWithFormat: @"%@ \n",dataURL.URL]];
+            }else if([item isKindOfClass:MHImageURL.class]){
+                MHImageURL *video = (MHImageURL *)item;
+                NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:video.URL]];
+                [picker addAttachmentData:data
+                                 mimeType:@"video/mp4"
+                                 fileName:@"video.mp4"];
             }
         }
         [picker setMessageBody:videoURLS isHTML:NO];
@@ -909,7 +924,7 @@
 
 -(UIBarButtonItem*)nextBarButtonItem{
     return [UIBarButtonItem.alloc initWithTitle:@"Next"
-                                          style:UIBarButtonItemStylePlain
+                                          style:UIBarButtonItemStyleBordered
                                          target:self
                                          action:@selector(showShareSheet)];
 }
@@ -962,17 +977,16 @@
 }
 -(void)saveImages:(NSArray*)object{
     [self getAllImagesForSelectedRows:^(NSArray *images) {
-        for (MHImageURL *dataURL in images) {
-            
-            if ([dataURL.image isKindOfClass:[UIImage class]]) {
+        for (id item in images) {
+            if ([item isKindOfClass:[UIImage class]]) {
                 
-                UIImage *imageToStore = dataURL.image;
+                UIImage *imageToStore = item;
                 
                 ALAssetsLibrary* library = ALAssetsLibrary.new;
                 NSData *data;
                 
                 if (imageToStore.images) {
-                    data = [NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:dataURL.URL]];
+                    data = [NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:imageToStore]];
                 }else{
                     data = UIImageJPEGRepresentation(imageToStore, 1.0);
                 }
@@ -980,6 +994,9 @@
                 [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
                     NSLog(@"%@",error);
                 }];
+            } else if ([item isKindOfClass:[MHImageURL class]]){
+                
+                
             }
         }
         [self cancelPressed];
