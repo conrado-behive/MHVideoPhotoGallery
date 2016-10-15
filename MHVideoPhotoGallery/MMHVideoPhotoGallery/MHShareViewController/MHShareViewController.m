@@ -344,7 +344,7 @@
                                 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
                                         animated:NO];
     
-    self.gradientView= [UIView.alloc initWithFrame:CGRectMake(0, self.view.frame.size.height-240, self.view.frame.size.width,240)];
+    self.gradientView = [UIView.alloc initWithFrame:CGRectMake(0, self.view.frame.size.height-240, self.view.frame.size.width,240)];
     
     self.toolbar = [UIToolbar.alloc initWithFrame:self.gradientView.frame];
     [self.view addSubview:self.toolbar];
@@ -385,21 +385,13 @@
     [self updateTitle];
     
     NSMutableArray *shareObjectAvailable = [NSMutableArray arrayWithArray:@[self.messageObject,
-                                                                            self.mailObject,
-                                                                            self.twitterObject,
-                                                                            self.faceBookObject]];
-    
-    
-    if(![SLComposeViewController isAvailableForServiceType:SLServiceTypeFacebook]){
-        [shareObjectAvailable removeObject:self.faceBookObject];
-    }
-    if(![SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]){
-        [shareObjectAvailable removeObject:self.twitterObject];
-    }
+                                                                            self.mailObject
+                                                                            ]];
     
     self.shareDataSource = [NSMutableArray arrayWithArray:@[shareObjectAvailable,
                                                             @[[self saveObject]]
                                                             ]];
+    
     
     self.shareDataSourceStart = [NSArray arrayWithArray:self.shareDataSource];
     if(UIApplication.sharedApplication.statusBarOrientation != UIInterfaceOrientationPortrait){
@@ -644,8 +636,10 @@
                 if (!image.images) {
                     [shareconntroller addImage:image];
                 }
-            }else{
-                videoURLS = [videoURLS stringByAppendingString:[NSString stringWithFormat: @"%@ \n",item]];
+            }else if([item isKindOfClass:MHImageURL.class]){
+                MHImageURL *video = (MHImageURL *)item;
+                NSString *url = video.URL;
+                [shareconntroller addURL:[NSURL URLWithString:url]];
             }
         }
         [shareconntroller setInitialText:videoURLS];
@@ -1027,6 +1021,26 @@
         
         [self updateCollectionView];
         [self updateTitle];
+        
+        NSMutableArray *array = self.shareDataSource.firstObject;
+        if (![array containsObject:self.twitterObject]) {
+            [array insertObject:self.twitterObject atIndex:array.count];
+        }
+        if (![array containsObject:self.faceBookObject]) {
+            [array insertObject:self.faceBookObject atIndex:array.count];
+        }
+        
+        for (NSIndexPath *indexPath in self.selectedRows) {
+            MHGalleryItem *item = [self itemForIndex:indexPath.row];
+            if (item.URLString) {
+                [array removeObject:self.twitterObject];
+                [array removeObject:self.faceBookObject];
+                return;
+            }
+        }
+        
+        [collectionView reloadData];
+        
     }else{
         MHShareItem *item = self.shareDataSource[collectionView.tag][indexPath.row];
         
