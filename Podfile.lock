@@ -1,18 +1,30 @@
 PODS:
   - Masonry (0.6.3)
-  - SDWebImage (3.7.3):
-    - SDWebImage/Core (= 3.7.3)
-  - SDWebImage/Core (3.7.3)
+  - SDWebImage (4.0.0-beta):
+    - SDWebImage/Core (= 4.0.0-beta)
+  - SDWebImage/Core (4.0.0-beta)
   - TTTAttributedLabel (1.13.3)
 
 DEPENDENCIES:
   - Masonry
-  - SDWebImage
+  - SDWebImage (from `https://github.com/rs/SDWebImage.git`, branch `4.x`)
   - TTTAttributedLabel (= 1.13.3)
+
+EXTERNAL SOURCES:
+  SDWebImage:
+    :branch: 4.x
+    :git: https://github.com/rs/SDWebImage.git
+
+CHECKOUT OPTIONS:
+  SDWebImage:
+    :commit: d6fa29c88a9d4febc2c9d8fa49ce23c68334d0aa
+    :git: https://github.com/rs/SDWebImage.git
 
 SPEC CHECKSUMS:
   Masonry: ff105a956abcd19a618b2028b121cb638d7a8e2f
-  SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
+  SDWebImage: 835b541a1946d371dea2ab41da591dd8d1f93865
   TTTAttributedLabel: 6f3174aef8e738f44dff97c2eb7d8184f6ab6277
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: 51dcfefdff395a63952eefaa23201c182ab957c1
+
+COCOAPODS: 1.2.0

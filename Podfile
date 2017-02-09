@@ -4,6 +4,9 @@ platform :ios, "7.0"
 
 inhibit_all_warnings!
 
-pod 'SDWebImage'
-pod 'TTTAttributedLabel', '1.13.3'
-pod 'Masonry'
+
+target 'MHVideoPhotoGallery' do
+	pod 'SDWebImage', :git => "https://github.com/rs/SDWebImage.git", :branch => "4.x"
+	pod 'TTTAttributedLabel', '1.13.3'
+	pod 'Masonry'
+end
