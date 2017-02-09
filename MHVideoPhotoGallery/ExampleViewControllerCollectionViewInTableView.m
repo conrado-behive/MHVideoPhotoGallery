@@ -60,8 +60,8 @@
     MHGalleryItem *tailored2 = [MHGalleryItem.alloc initWithURL:@"http://www.tailored-apps.com/wp-content/uploads/2014/01/hannes.jpg"
                                                    galleryType:MHGalleryTypeImage];
     
-    MHGalleryItem *tailored3 = [MHGalleryItem.alloc initWithURL:@"https://dl.dropboxusercontent.com/u/17911939/momu%26meParty.mp4"
-                                                    galleryType:MHGalleryTypeVideo];
+   // MHGalleryItem *tailored3 = [MHGalleryItem.alloc initWithURL:@"https://dl.dropboxusercontent.com/u/17911939/momu%26meParty.mp4"
+     //                                               galleryType:MHGalleryTypeVideo];
     
     NSShadow *shadow = [[NSShadow alloc] init];
     shadow.shadowColor = [UIColor blackColor];

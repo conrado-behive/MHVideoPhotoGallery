@@ -17,6 +17,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "MHGallery.h"
 #import "Masonry.h"
+#import "BHUtilities.h"
 
 @implementation MHImageURL
 
@@ -667,7 +668,8 @@
             if ([item isKindOfClass:UIImage.class]) {
                 UIImage *image = (UIImage *)item;
                 if (image.images) {
-                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[SDImageCache.sharedImageCache defaultCachePathForKey:image]]
+                    NSString *key = [BHUtilities imageToNSString:image];
+                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[SDImageCache.sharedImageCache defaultCachePathForKey:key]]
                                typeIdentifier:(__bridge NSString *)kUTTypeGIF
                                      filename:@"animated.gif"];
                 }else{
@@ -706,7 +708,8 @@
                 UIImage *image = (UIImage *)item;
                 
                 if (image.images) {
-                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:image]]
+                    NSString *key = [BHUtilities imageToNSString:image];
+                    [picker addAttachmentData:[NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:key]]
                                      mimeType:@"image/gif"
                                      fileName:@"pic.gif"];
                 }else{
@@ -981,7 +984,8 @@
                 NSData *data;
                 
                 if (imageToStore.images) {
-                    data = [NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:imageToStore]];
+                    NSString *key = [BHUtilities imageToNSString:imageToStore];
+                    data = [NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:key]];
                 }else{
                     data = UIImageJPEGRepresentation(imageToStore, 1.0);
                 }
