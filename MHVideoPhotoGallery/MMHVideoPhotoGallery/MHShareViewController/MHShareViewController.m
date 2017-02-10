@@ -17,7 +17,6 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "MHGallery.h"
 #import "Masonry.h"
-#import "BHUtilities.h"
 
 @implementation MHImageURL
 
@@ -668,7 +667,7 @@
             if ([item isKindOfClass:UIImage.class]) {
                 UIImage *image = (UIImage *)item;
                 if (image.images) {
-                    NSString *key = [BHUtilities imageToNSString:image];
+                    NSString *key = [self imageToNSString:image];
                     [picker addAttachmentData:[NSData dataWithContentsOfFile:[SDImageCache.sharedImageCache defaultCachePathForKey:key]]
                                typeIdentifier:(__bridge NSString *)kUTTypeGIF
                                      filename:@"animated.gif"];
@@ -708,7 +707,7 @@
                 UIImage *image = (UIImage *)item;
                 
                 if (image.images) {
-                    NSString *key = [BHUtilities imageToNSString:image];
+                    NSString *key = [self imageToNSString:image];
                     [picker addAttachmentData:[NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:key]]
                                      mimeType:@"image/gif"
                                      fileName:@"pic.gif"];
@@ -984,7 +983,7 @@
                 NSData *data;
                 
                 if (imageToStore.images) {
-                    NSString *key = [BHUtilities imageToNSString:imageToStore];
+                    NSString *key = [self imageToNSString:imageToStore];
                     data = [NSData dataWithContentsOfFile:[[SDImageCache sharedImageCache] defaultCachePathForKey:key]];
                 }else{
                     data = UIImageJPEGRepresentation(imageToStore, 1.0);
@@ -1063,6 +1062,12 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (NSString *)imageToNSString:(UIImage *)image {
+    NSData *imageData = UIImagePNGRepresentation(image);
+    
+    return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
 @end
