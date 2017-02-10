@@ -21,15 +21,12 @@
                                                         successBlock:^(UIImage *image, NSUInteger videoDuration, NSError *error) {
                                                             
                                                             if (!weakSelf) return;
-                                                            dispatch_sync(dispatch_get_main_queue(), ^{
-                                                                if (!weakSelf) return;
-                                                                if (image){
-                                                                    weakSelf.image = image;
-                                                                    [weakSelf setNeedsLayout];
-                                                                }
-                                                                if (succeedBlock) {                                                                     succeedBlock(image,videoDuration,error);
-                                                                }
-                                                            });
+                                                            if (image){
+                                                                weakSelf.image = image;
+                                                                [weakSelf setNeedsLayout];
+                                                            }
+                                                            if (succeedBlock) {                                                                     succeedBlock(image,videoDuration,error);
+                                                            }
 
                                                         }];
 }
@@ -81,13 +78,11 @@
     __weak typeof(self) weakSelf = self;
     
     if (!weakSelf) return;
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        weakSelf.image = image;
-        [weakSelf setNeedsLayout];
-        if (succeedBlock) {
-            succeedBlock(image,nil);
-        }
-    });
+    weakSelf.image = image;
+    [weakSelf setNeedsLayout];
+    if (succeedBlock) {
+        succeedBlock(image,nil);
+    }
 }
 
 
